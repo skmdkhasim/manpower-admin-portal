@@ -17,6 +17,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
 
 # Non-root user for defense in depth
 RUN addgroup -S app && adduser -S app -G app
