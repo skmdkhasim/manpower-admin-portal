@@ -1,0 +1,59 @@
+export enum TenantStatus {
+  ONBOARDING = 'ONBOARDING',
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  CHURNED = 'CHURNED',
+}
+
+export enum TenantOnboardingStep {
+  COMPANY_DETAILS = 'COMPANY_DETAILS',
+  BRANCH_SETUP = 'BRANCH_SETUP',
+  ADMIN_USER = 'ADMIN_USER',
+  PLAN_SELECTION = 'PLAN_SELECTION',
+  COMPLETE = 'COMPLETE',
+}
+
+export enum TenantUserRole {
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  HR_MANAGER = 'HR_MANAGER',
+  RECRUITER = 'RECRUITER',
+  VIEWER = 'VIEWER',
+}
+
+export enum TenantUserStatus {
+  INVITED = 'INVITED',
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+}
+
+export enum BillingCycle {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+}
+
+export enum SubscriptionStatus {
+  TRIALING = 'TRIALING',
+  ACTIVE = 'ACTIVE',
+  PAST_DUE = 'PAST_DUE',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
+}
+
+export enum PlanChangeAction {
+  TRIAL_START = 'TRIAL_START',
+  NEW_SUBSCRIPTION = 'NEW_SUBSCRIPTION',
+  UPGRADE = 'UPGRADE',
+  DOWNGRADE = 'DOWNGRADE',
+  RENEWAL = 'RENEWAL',
+  CANCELLATION = 'CANCELLATION',
+}
+
+export enum InvoiceStatus {
+  DRAFT = 'DRAFT',
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  OVERDUE = 'OVERDUE',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}

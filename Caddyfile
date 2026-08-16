@@ -1,0 +1,12 @@
+# Reverse proxy with automatic free HTTPS (Let's Encrypt), via Caddy.
+# Replace the two placeholder domains below with your real ones — each
+# needs a DNS "A" record pointing at your VPS's IP address before Caddy
+# can issue a certificate for it.
+
+app.yourdomain.com {
+	reverse_proxy frontend:3000
+}
+
+api.yourdomain.com {
+	reverse_proxy backend:3001
+}
