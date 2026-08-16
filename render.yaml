@@ -1,0 +1,63 @@
+# Render Blueprint — spins up a free demo of the Super Admin Portal
+# (backend API + frontend + database) directly from this GitHub repo.
+#
+# How to use: on render.com, "New" → "Blueprint", connect this repo, and
+# Render reads this file to provision everything below automatically.
+# See README.md for the full walkthrough.
+#
+# Note: the two `https://manpower-admin-*.onrender.com` URLs below assume
+# those exact service names are available on Render. If Render has to
+# rename either service (because the name is already taken by someone
+# else), update NEXT_PUBLIC_API_URL and CORS_ORIGIN to match the real
+# assigned URLs after the first deploy.
+
+services:
+  - type: web
+    runtime: docker
+    name: manpower-admin-backend
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    preDeployCommand: npm run migration:run:prod && npm run seed:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: manpower-admin-db
+          property: connectionString
+      - key: DB_SSL
+        value: "true"
+      - key: CORS_ORIGIN
+        value: https://manpower-admin-frontend.onrender.com
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: SEED_SUPER_ADMIN_EMAIL
+        value: admin@example.com
+      - key: SEED_SUPER_ADMIN_PASSWORD
+        generateValue: true
+      - key: SEED_SUPER_ADMIN_NAME
+        value: Super Admin
+
+  - type: web
+    runtime: docker
+    name: manpower-admin-frontend
+    plan: free
+    region: oregon
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NEXT_PUBLIC_API_URL
+        value: https://manpower-admin-backend.onrender.com/api
+
+databases:
+  - name: manpower-admin-db
+    plan: free
+    region: oregon

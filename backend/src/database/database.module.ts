@@ -10,11 +10,18 @@ import { entities } from './entities.list';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get<string>('database.host'),
-        port: config.get<number>('database.port'),
-        username: config.get<string>('database.username'),
-        password: config.get<string>('database.password'),
-        database: config.get<string>('database.name'),
+        // Managed hosts (Render, Railway, Heroku-style) inject a single
+        // DATABASE_URL — prefer it when present. Local/.env setups keep
+        // using the discrete DB_HOST/PORT/... vars below.
+        ...(config.get<string>('database.url')
+          ? { url: config.get<string>('database.url') }
+          : {
+              host: config.get<string>('database.host'),
+              port: config.get<number>('database.port'),
+              username: config.get<string>('database.username'),
+              password: config.get<string>('database.password'),
+              database: config.get<string>('database.name'),
+            }),
         ssl: config.get<boolean>('database.ssl')
           ? { rejectUnauthorized: false }
           : false,

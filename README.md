@@ -67,6 +67,18 @@ To also get free automatic HTTPS on a real domain, edit `Caddyfile` with your do
 docker compose --profile with-https up -d --build
 ```
 
+## Free live demo on Render (no server to manage)
+
+This repo includes a `render.yaml` blueprint that spins up the backend, frontend, and a Postgres database together, straight from GitHub — good for showing a working demo before committing to paid hosting.
+
+1. Push this repo to GitHub (if you haven't already).
+2. Create a free account at [render.com](https://render.com) and sign in.
+3. Click **New → Blueprint**, connect this GitHub repo, and click **Apply**. Render reads `render.yaml` and provisions all three services automatically — no manual configuration needed.
+4. First deploy takes a few minutes. Once it's live, your app is at `https://manpower-admin-frontend.onrender.com` (Render may append a suffix to the name if it's already taken elsewhere — check the actual URL it assigns you).
+5. The Super Admin login is `admin@example.com`, with the password Render auto-generated for `SEED_SUPER_ADMIN_PASSWORD` — find it in the backend service's **Environment** tab on Render, then log in and change it.
+
+Two things worth knowing about the free tier, so nothing feels broken later: the free web services "sleep" after 15 minutes of no traffic and take about a minute to wake back up on the next visit, and the free Postgres database **expires and is deleted 30 days after creation** unless you upgrade it. That makes this setup great for demos, but not for real tenant data — see the hosting options below once you're ready to go live for real.
+
 ## Where to host this cheaply
 
 You asked for something modern, cheap to run, and simple to set up. A few honest options, roughly cheapest to easiest:

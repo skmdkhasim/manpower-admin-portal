@@ -4,6 +4,9 @@ export default () => ({
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
 
   database: {
+    // If set (e.g. by Render/Railway), takes priority over the discrete
+    // DB_HOST/PORT/... vars below — see database.module.ts.
+    url: process.env.DATABASE_URL || '',
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     username: process.env.DB_USERNAME || 'postgres',
