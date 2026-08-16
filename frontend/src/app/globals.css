@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — Super Admin Portal, matched to the client's real
+  Claude Design prototype (login screen export). Ink Navy (#0B2545) and
+  Signal Blue (#2F6FED) are pulled directly from the prototype's computed
+  styles; Signal Amber is kept as the semantic "pending / needs attention"
+  status tone (onboarding-in-progress, subscription-past-due, etc.) rather
+  than a brand color, so it never competes with the blue interactive accent.
+*/
+:root {
+  --color-ink-950: #0b2545;
+  --color-ink-900: #0e3868;
+  --color-ink-800: #123e78;
+  --color-ink-700: #1b4c8f;
+  --color-ink-600: #3e6fb0;
+  --color-ink-200: #cfe0fa;
+  --color-ink-100: #afc6ec;
+  --color-ink-50: #f3f7ff;
+
+  --color-blue-600: #2557c7;
+  --color-blue-500: #2f6fed;
+  --color-blue-100: #e3ecfd;
+
+  --color-amber-500: #f2a93b;
+  --color-amber-600: #d98f22;
+  --color-amber-100: #fdecd0;
+
+  --color-mist-50: #f6f8fc;
+  --color-mist-100: #eef2f8;
+  --color-mist-200: #d6deea;
+
+  --color-graphite-900: #1e293b;
+  --color-graphite-700: #334155;
+  --color-graphite-600: #64748b;
+  --color-graphite-400: #94a3b8;
+
+  --color-coral-500: #e85d4e;
+  --color-coral-100: #fbe4e1;
+
+  --color-emerald-500: #2fa66a;
+  --color-emerald-100: #ddf1e5;
+
+  --background: var(--color-mist-50);
+  --foreground: var(--color-graphite-900);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-ink-950: var(--color-ink-950);
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-800: var(--color-ink-800);
+  --color-ink-700: var(--color-ink-700);
+  --color-ink-600: var(--color-ink-600);
+  --color-ink-200: var(--color-ink-200);
+  --color-ink-100: var(--color-ink-100);
+  --color-ink-50: var(--color-ink-50);
+
+  --color-blue-600: var(--color-blue-600);
+  --color-blue-500: var(--color-blue-500);
+  --color-blue-100: var(--color-blue-100);
+
+  --color-amber-500: var(--color-amber-500);
+  --color-amber-600: var(--color-amber-600);
+  --color-amber-100: var(--color-amber-100);
+
+  --color-mist-50: var(--color-mist-50);
+  --color-mist-100: var(--color-mist-100);
+  --color-mist-200: var(--color-mist-200);
+
+  --color-graphite-900: var(--color-graphite-900);
+  --color-graphite-700: var(--color-graphite-700);
+  --color-graphite-600: var(--color-graphite-600);
+  --color-graphite-400: var(--color-graphite-400);
+
+  --color-coral-500: var(--color-coral-500);
+  --color-coral-100: var(--color-coral-100);
+
+  --color-emerald-500: var(--color-emerald-500);
+  --color-emerald-100: var(--color-emerald-100);
+
+  --font-display: "Spectral", ui-serif, Georgia, serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Visible keyboard focus everywhere — no outline: none anywhere in this app. */
+:focus-visible {
+  outline: 2px solid var(--color-blue-500);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@keyframes sa-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+}
+
+.sa-dot {
+  animation: sa-pulse 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .sa-dot {
+    animation: none;
+  }
+}
