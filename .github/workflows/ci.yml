@@ -1,0 +1,82 @@
+name: CI
+
+# Verifies the backend (NestJS) and frontend (Next.js) each install, typecheck,
+# build, and (where present) test cleanly. Lint runs too, but as a
+# non-blocking, informational step for now — see the sibling
+# nija-manpower-tenant-app repo's identical CI for why; tighten this once
+# there's a lint backlog to clear or a reason to enforce it strictly.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (NestJS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (includes typecheck)
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Test
+        # No .spec.ts files exist yet — --passWithNoTests keeps that from
+        # failing CI; this starts reporting real results the moment tests
+        # are added, with no workflow change needed.
+        run: npx jest --passWithNoTests
+
+  frontend:
+    name: Frontend (Next.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build
+        # NEXT_PUBLIC_API_URL is baked in at build time; falls back to a
+        # local default (see lib/api-client.ts) when unset, so this
+        # succeeds without any secrets configured. Override here (or via a
+        # repo/environment variable) once this build feeds a real deploy
+        # step — see render.yaml for the values the Render blueprint uses.
+        run: npm run build
