@@ -19,6 +19,12 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    # Overrides the Dockerfile's default CMD so migrations and seed data
+    # actually run before the API starts — see backend/start.sh. Without
+    # this, `docker compose up` boots the API straight against an empty
+    # Postgres with no tables (Render's own deploy avoids this via
+    # render.yaml's `dockerCommand: sh start.sh`, which only applies there).
+    command: sh start.sh
     depends_on:
       postgres:
         condition: service_healthy

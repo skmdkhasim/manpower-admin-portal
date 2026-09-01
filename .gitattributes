@@ -1,0 +1,6 @@
+# Shell scripts must stay LF — CRLF breaks their #!/bin/sh shebang when
+# Docker copies them into a Linux container (e.g. backend/start.sh,
+# deploy/provision-ec2.sh).
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
