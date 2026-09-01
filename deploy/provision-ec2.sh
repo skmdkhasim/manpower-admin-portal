@@ -17,9 +17,10 @@
 
 set -euo pipefail
 
-TENANT_REPO="https://github.com/skmdkhasim/nija-manpower-tenant-app.git"
-ADMIN_REPO="https://github.com/skmdkhasim/manpower-admin-portal.git"
+TENANT_REPO="git@github.com:skmdkhasim/nija-manpower-tenant-app.git"
+ADMIN_REPO="git@github.com:skmdkhasim/manpower-admin-portal.git"
 APPS_DIR="/opt/apps"
+DEPLOY_KEY="$HOME/.ssh/github_deploy_key"
 
 echo "==> Updating packages"
 sudo apt-get update -y
@@ -41,6 +42,58 @@ fi
 
 # Let the current user run `docker` without sudo (takes effect on next login).
 sudo usermod -aG docker "$USER"
+
+echo "==> Setting up a dedicated SSH deploy key for GitHub"
+# GitHub dropped password auth for git over HTTPS years ago, and a fully
+# unattended box (this one — CI will `git pull` here forever, with nobody
+# watching) can't type a Personal Access Token into a prompt either. A
+# read-only SSH deploy key, scoped to just these two repos, is the right
+# fit: generated once here, never expires, never touches your own GitHub
+# login/2FA/OTP at all.
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+
+if [ ! -f "$DEPLOY_KEY" ]; then
+  ssh-keygen -t ed25519 -C "ec2-deploy-key" -f "$DEPLOY_KEY" -N ""
+else
+  echo "Deploy key already exists at $DEPLOY_KEY, reusing it."
+fi
+
+# Pre-populate known_hosts so the later `git clone` doesn't hang on an
+# interactive "are you sure you want to continue connecting?" prompt.
+if ! ssh-keygen -F github.com >/dev/null 2>&1; then
+  ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts" 2>/dev/null
+fi
+
+if ! grep -q "^Host github.com$" "$HOME/.ssh/config" 2>/dev/null; then
+  cat >> "$HOME/.ssh/config" <<EOF
+Host github.com
+  IdentityFile $DEPLOY_KEY
+  IdentitiesOnly yes
+EOF
+fi
+chmod 600 "$HOME/.ssh/config"
+
+# Captured into a variable rather than piped directly — `ssh -T
+# git@github.com` always exits 1 even on successful auth (GitHub doesn't
+# grant shell access), and with `pipefail` active that would make
+# `ssh | grep` always report non-zero regardless of what grep matched.
+ssh_probe="$(ssh -T git@github.com -o BatchMode=yes -o StrictHostKeyChecking=accept-new 2>&1 || true)"
+if ! grep -q "successfully authenticated" <<< "$ssh_probe"; then
+  echo
+  echo "=================================================================="
+  echo "Add this PUBLIC key as a read-only Deploy Key on BOTH repos before"
+  echo "continuing (it's just a public key — safe to paste anywhere):"
+  echo
+  cat "$DEPLOY_KEY.pub"
+  echo
+  echo "  https://github.com/skmdkhasim/nija-manpower-tenant-app/settings/keys"
+  echo "  https://github.com/skmdkhasim/manpower-admin-portal/settings/keys"
+  echo "(Add deploy key -> paste it -> leave \"Allow write access\" UNCHECKED -> Add key)"
+  echo "=================================================================="
+  echo
+  read -rp "Press Enter once you've added it to both repos... " _
+fi
 
 echo "==> Cloning both repos into $APPS_DIR"
 sudo mkdir -p "$APPS_DIR"
@@ -88,6 +141,8 @@ Open these inbound ports in the EC2 instance's Security Group:
 
 From here on, pushing to each repo's default branch (main / master)
 runs CI, then SSHes in and re-runs `git pull && docker compose up -d
---build` automatically — see each repo's .github/workflows/ci.yml.
+--build` automatically — see each repo's .github/workflows/ci.yml. That
+`git pull` uses the same SSH deploy key set up above, so it will never
+prompt for credentials.
 ==================================================================
 EOF
