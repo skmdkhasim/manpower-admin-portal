@@ -10,7 +10,7 @@ export default () => ({
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
+    password: process.env.DB_PASSWORD || '1OqqmY3wQ6ajVc7ElhfMNBYk',
     name: process.env.DB_NAME || 'manpower_mgmt',
     ssl: process.env.DB_SSL === 'true',
     synchronize: process.env.DB_SYNCHRONIZE === 'true',
@@ -18,10 +18,10 @@ export default () => ({
 
   jwt: {
     accessSecret:
-      process.env.JWT_ACCESS_SECRET || 'dev-access-secret-change-me',
+      process.env.JWT_ACCESS_SECRET || 'e4d8d96c5f0dc3967c1a7a0c59b50615fc8433562347bb520a831f0a14262a87',
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
     refreshSecret:
-      process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret-change-me',
+      process.env.JWT_REFRESH_SECRET || '92adac346883903d2a25fb188e68f1134ec9b28581bc59bd33027bf2502feea6',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     refreshExpiresInMs: 7 * 24 * 60 * 60 * 1000,
   },
